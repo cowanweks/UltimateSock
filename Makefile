@@ -1,5 +1,5 @@
 CC=clang
-CCFLAGS=-c -g -I include
+CCFLAGS=-c -g -I include -std=c11
 LDFLAGS=-lWs2_32
 BINDIR=bin
 OBJDIR=obj

@@ -2,7 +2,11 @@
   "configurations": [
     {
       "name": "windows-clang-x64",
-      "includePath": ["${default}", "${workspaceFolder}/include"],
+      "includePath": [
+        "${default}",
+        "${workspaceFolder}/include"
+        "C:/Programs/msys64/clang64/include",
+      ],
       "compilerPath": "C:/Programs/msys64/clang64/bin/clang.exe",
       "cStandard": "c11",
       "cppStandard": "c++11",
