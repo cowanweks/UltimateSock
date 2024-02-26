@@ -3,15 +3,17 @@
     {
       "name": "windows-clang-x64",
       "includePath": [
-        "${default}",
-        "${workspaceFolder}/include"
-        "C:/Programs/msys64/clang64/include",
+        "${workspaceFolder}/**",
+        "C:/Programs/OpenALSDK/include",
+        "C:/Programs/msys64/clang64/include/libxml2"
       ],
-      "compilerPath": "C:/Programs/msys64/clang64/bin/clang.exe",
-      "cStandard": "c11",
-      "cppStandard": "c++11",
-      "intelliSenseMode": "windows-clang-x64",
-      "compilerArgs": ["-Wall", "-Werror"]
+      "browse": {
+        "path": ["${default}", "${workspaceFolder}"]
+      },
+      "compilerPath": "C:\\Programs\\msys64\\clang64\\bin\\clang++.exe",
+      "cStandard": "c17",
+      "cppStandard": "c++17",
+      "intelliSenseMode": "windows-clang-x64"
     }
   ],
   "version": 4

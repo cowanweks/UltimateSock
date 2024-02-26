@@ -1,31 +1,30 @@
-CC=clang
-CCFLAGS=-c -g -I include -std=c11
-LDFLAGS=-lWs2_32
+CC=clang++
+RC=windres
+CCFLAGS= -std=c++11 -c -g -I include -I $(OPENAL_SDK)\include
+LDFLAGS= -L lib -lglfw3 -lvlccore -lvlc -L $(OPENAL_SDK)\libs\win64
 BINDIR=bin
-OBJDIR=obj
+BIN=$(BINDIR)/App.exe
+OBJDIR=$(BINDIR)/obj
 DEFINES=-DNDEBUG
 
 .PHONY: bootstrap clean
 
-all: bootstrap $(BINDIR)/server $(BINDIR)/client $(BINDIR)/App
+all: bootstrap $(BIN)
 
-$(OBJDIR)/%.o:  src/server/%.c
+$(OBJDIR)/%.res.o: resources/%.rc
+	$(RC) -o $@ $^
+
+$(OBJDIR)/%.o: src/%.c lib/vlc/%.c
 	$(CC) $(CCFLAGS) $(DEFINES) -o $@ $^
 
-$(OBJDIR)/%.o:  src/client/%.c
+$(OBJDIR)/%.o: src/%.cpp
 	$(CC) $(CCFLAGS) $(DEFINES) -o $@ $^
 
-$(BINDIR)/client: $(OBJDIR)/client.o
-	$(CC) $(LDFLAGS) -o $@ $^
-
-$(BINDIR)/server: $(OBJDIR)/server.o
-	$(CC) $(LDFLAGS) -o $@ $^
-
-$(BINDIR)/App: $(OBJDIR)/App.o $(OBJDIR)/gui.o
-	$(CC) $(LDFLAGS) -L lib -lglfw3 -mwindows -o $@ $^
+$(BIN): $(OBJDIR)/audio.o $(OBJDIR)/App.o $(OBJDIR)/gui.o $(OBJDIR)/App.res.o
+	$(CC) $(LDFLAGS) -mwindows -o $@ $^
 
 bootstrap:
-	mkdir -p obj bin
+	@mkdir -p bin/obj
 
 clean:
-	$(RM) -rf obj bin
+	@rm -rf bin/obj bin/*.exe
