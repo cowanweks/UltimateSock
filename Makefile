@@ -1,30 +1,37 @@
-CC=clang++
-RC=windres
-CCFLAGS= -std=c++11 -c -g -I include -I $(OPENAL_SDK)\include
-LDFLAGS= -L lib -lglfw3 -lvlccore -lvlc -L $(OPENAL_SDK)\libs\win64
-BINDIR=bin
-BIN=$(BINDIR)/App.exe
-OBJDIR=$(BINDIR)/obj
-DEFINES=-DNDEBUG
+export CC       = clang
+export CXX      = clang++
+export RC       = windres
+export CCFLAGS  = -c -g $(INCDIR)
+export CXXFLAGS += $(CCFLAGS) -std=c++11
+export ASMFLAGS =
+export LDFLAGS  = $(LDDIR) -lglfw3 -lvlccore -lvlc -lOpenAL32
+export ROOT_DIR = $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
+export BINDIR   = $(ROOT_DIR)/bin
+export DEFINES  = -DNDEBUG
+export SUBDIRS  = $(ROOT_DIR)/src/core $(ROOT_DIR)/src/client
+export OBJDIR   = $(BINDIR)/obj
+export LDDIR    = -L $(ROOT_DIR)/lib -L $(OPENAL_SDK)/libs/win64
+export INCDIR   = -I $(ROOT_DIR)/include -I $(OPENAL_SDK)/include
+SETUP           = $(ROOT_DIR)/out
 
-.PHONY: bootstrap clean
+.PHONY: bootstrap subdirs $(SUBDIRS) clean
 
-all: bootstrap $(BIN)
+all: bootstrap $(ROOT_DIR)/src/core $(ROOT_DIR)/src/client
 
 $(OBJDIR)/%.res.o: resources/%.rc
 	$(RC) -o $@ $^
 
-$(OBJDIR)/%.o: src/%.c lib/vlc/%.c
-	$(CC) $(CCFLAGS) $(DEFINES) -o $@ $^
 
-$(OBJDIR)/%.o: src/%.cpp
-	$(CC) $(CCFLAGS) $(DEFINES) -o $@ $^
+subdirs: $(SUBDIRS)
 
-$(BIN): $(OBJDIR)/audio.o $(OBJDIR)/App.o $(OBJDIR)/gui.o $(OBJDIR)/App.res.o
-	$(CC) $(LDFLAGS) -mwindows -o $@ $^
+$(SUBDIRS):
+	$(MAKE) -C $@
 
 bootstrap:
-	@mkdir -p bin/obj
+	@mkdir -p out bin/obj
+
+package:
+	@makensis
 
 clean:
-	@rm -rf bin/obj bin/*.exe
+	@rm -rf out $(ROOT_DIR)/bin/obj $(ROOT_DIR)/bin/*.exe $(ROOT_DIR)/bin/core.dll
